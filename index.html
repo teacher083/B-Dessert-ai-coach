@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>B-디저트 실무 | AI 실습코치</title>
+<style>
+:root{
+  --bg:#fff8f7; --card:#ffffff; --ink:#2f2726; --muted:#7c6f6c;
+  --accent:#b51f3f; --accent2:#7e1430; --soft:#fde9ee; --line:#ead9dd;
+  --ok:#1f7a53; --warn:#a26a00; --danger:#b42318;
+  --shadow:0 14px 35px rgba(92,44,55,.10);
+}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,#fff8f7,#fffdfc);font-family:Arial,"Noto Sans KR",sans-serif;color:var(--ink)}
+.wrap{max-width:980px;margin:auto;padding:18px}
+header{display:flex;gap:14px;align-items:center;margin-bottom:16px}
+.logo{width:58px;height:58px;border-radius:18px;background:var(--accent);display:grid;place-items:center;color:#fff;font-size:30px;box-shadow:var(--shadow)}
+h1{font-size:23px;margin:0 0 4px}.sub{color:var(--muted);font-size:14px}
+.badges{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.badge{font-size:12px;padding:6px 9px;border-radius:999px;background:var(--soft);color:var(--accent2);border:1px solid #f2cbd5}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:var(--shadow)}
+.card h2{font-size:17px;margin:0 0 14px}.card h3{font-size:14px;margin:16px 0 8px}
+.full{grid-column:1/-1}
+label{display:block;font-size:13px;font-weight:700;margin:11px 0 6px}
+input,textarea,select{width:100%;border:1px solid #dccdd1;border-radius:12px;padding:11px 12px;font-size:14px;background:#fff;color:var(--ink);outline:none}
+input:focus,textarea:focus,select:focus{border-color:#cc7185;box-shadow:0 0 0 3px rgba(181,31,63,.08)}
+textarea{min-height:90px;resize:vertical}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button{border:0;border-radius:12px;padding:11px 14px;font-weight:800;cursor:pointer}
+.primary{background:var(--accent);color:#fff}.secondary{background:#f5ecee;color:var(--accent2)}
+.ghost{background:#fff;border:1px solid var(--line);color:var(--ink)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.photoBox{border:2px dashed #ddbfc7;border-radius:16px;padding:14px;text-align:center;background:#fffafb}
+.photoBox input{border:0;padding:5px;background:transparent}
+#preview{display:none;max-width:100%;max-height:330px;margin:12px auto 0;border-radius:14px;border:1px solid var(--line)}
+.note{font-size:12px;color:var(--muted);line-height:1.55;margin-top:8px}
+.coach{background:linear-gradient(135deg,#fff6f8,#fff);border:1px solid #efccd5;border-radius:18px;padding:16px}
+.coachHead{display:flex;gap:10px;align-items:center;margin-bottom:10px}
+.avatar{width:42px;height:42px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:21px}
+.chat{padding:11px 13px;background:#fff;border:1px solid var(--line);border-radius:14px;margin:8px 0;line-height:1.6;font-size:14px}
+.chat strong{color:var(--accent2)}
+.metric{display:grid;grid-template-columns:120px 1fr 44px;align-items:center;gap:8px;margin:9px 0}
+.bar{height:10px;background:#f2e8ea;border-radius:99px;overflow:hidden}.fill{height:100%;background:var(--accent);border-radius:99px}
+.checks{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.check{display:flex;align-items:center;gap:8px;padding:10px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.check input{width:auto}
+.mission{border-left:5px solid var(--accent);background:#fff4f6;padding:13px;border-radius:12px;margin-top:12px}
+.small{font-size:12px;color:var(--muted)}
+.saved{font-size:13px;color:var(--ok);font-weight:700;display:none;margin-top:8px}
+.footer{font-size:12px;color:var(--muted);text-align:center;padding:18px 4px}
+hr{border:0;border-top:1px solid var(--line);margin:16px 0}
+@media(max-width:760px){.grid,.row{grid-template-columns:1fr}.full{grid-column:auto}.metric{grid-template-columns:95px 1fr 38px}.checks{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="logo">🌺</div>
+  <div>
+    <h1>B-디저트 실무 · AI 실습코치</h1>
+    <div class="sub">사진·공정기록·자기평가를 바탕으로 다음 실습 행동까지 연결하는 코칭형 실습일지</div>
+    <div class="badges">
+      <span class="badge">학생용 프로토타입</span><span class="badge">OpenAI API 연결형</span><span class="badge">로컬 저장</span>
+    </div>
+  </div>
+</header>
+
+<div class="grid">
+  <section class="card">
+    <h2>① 오늘의 실습</h2>
+    <label>학습주제</label>
+    <select id="product">
+      <option>동백 마들렌</option>
+      <option>부산 바다 휘낭시에</option>
+      <option>광안대교 쿠키</option>
+      <option>오륙도 타르트</option>
+      <option>부산 시그니처 디저트 프로젝트</option>
+    </select>
+
+    <div class="row">
+      <div><label>학생 이름</label><input id="student" placeholder="예: 김부산"></div>
+      <div><label>실습일</label><input id="date" type="date"></div>
+    </div>
+
+    <label>오늘의 목표</label>
+    <input id="goal" value="제품의 표준 공정을 지키고 완제품의 형태·색·굽기 상태를 스스로 평가한다.">
+
+    <label>표준 배합/공정 메모</label>
+    <textarea id="process" placeholder="예: 버터 120g / 달걀 100g / 170℃ 13분 ..."></textarea>
+  </section>
+
+  <section class="card">
+    <h2>② 완제품 사진</h2>
+    <div class="photoBox">
+      <strong>📷 완제품 사진을 올려 주세요</strong>
+      <div class="note">정면 또는 45° 각도에서 제품 전체가 보이도록 촬영하세요.</div>
+      <input id="photo" type="file" accept="image/*" capture="environment">
+      <img id="preview" alt="업로드 미리보기">
+    </div>
+    <div class="note">※ 사진은 서버의 AI 코칭 API로 전송되어 분석됩니다. 맛·향·내부 식감처럼 사진으로 확인할 수 없는 내용은 단정하지 않도록 코칭 지침을 적용합니다.</div>
+  </section>
+
+  <section class="card">
+    <h2>③ 과정 기록</h2>
+    <div class="row">
+      <div><label>실제 오븐 온도(℃)</label><input id="temp" type="number" placeholder="170"></div>
+      <div><label>실제 굽기 시간(분)</label><input id="time" type="number" placeholder="13"></div>
+    </div>
+    <label>실습 중 달라진 점</label>
+    <textarea id="change" placeholder="예: 반죽 휴지시간이 15분 부족했다. 팬에 반죽을 조금 많이 담았다."></textarea>
+
+    <label>가장 어려웠던 점</label>
+    <textarea id="difficulty" placeholder="예: 반죽 농도를 판단하기 어려웠다."></textarea>
+  </section>
+
+  <section class="card">
+    <h2>④ 학생 자기평가</h2>
+    <div class="checks">
+      <label class="check"><input type="checkbox" name="issue" value="색이 너무 진함">색이 너무 진함</label>
+      <label class="check"><input type="checkbox" name="issue" value="색이 너무 연함">색이 너무 연함</label>
+      <label class="check"><input type="checkbox" name="issue" value="부피가 작음">부피가 작음</label>
+      <label class="check"><input type="checkbox" name="issue" value="모양이 불균일함">모양이 불균일함</label>
+      <label class="check"><input type="checkbox" name="issue" value="표면이 갈라짐">표면이 갈라짐</label>
+      <label class="check"><input type="checkbox" name="issue" value="팬에서 잘 떨어지지 않음">팬에서 잘 떨어지지 않음</label>
+    </div>
+
+    <label>오늘 제품 만족도</label>
+    <input id="score" type="range" min="1" max="5" value="3" oninput="scoreText.textContent=this.value+' / 5'">
+    <div id="scoreText" class="small">3 / 5</div>
+
+    <label>내가 생각한 실패 원인</label>
+    <textarea id="selfCause" placeholder="내 생각을 먼저 적어 봅시다. AI 답을 보기 전에 작성하는 것이 중요합니다."></textarea>
+  </section>
+
+  <section class="card full">
+    <h2>⑤ AI 실습코치</h2>
+    <div class="coach">
+      <div class="coachHead"><div class="avatar">👩‍🍳</div><div><strong>B-디저트 코치</strong><div class="small">정답을 대신 주기보다 원인을 찾고 다음 행동을 제안합니다.</div></div></div>
+      <div id="coachIntro" class="chat">실습기록과 자기평가를 작성한 뒤 <strong>「코칭 받기」</strong>를 눌러 주세요.</div>
+
+      <div id="analysisArea" style="display:none">
+        <h3>코칭 결과</h3>
+        <div id="good" class="chat"></div>
+        <div id="cause" class="chat"></div>
+        <div id="fix" class="chat"></div>
+        <div id="question" class="chat"></div>
+
+        <h3>자기평가 기반 품질 점검</h3>
+        <div class="metric"><span>공정 기록</span><div class="bar"><div id="m1" class="fill" style="width:0%"></div></div><b id="m1t">0</b></div>
+        <div class="metric"><span>원인 추론</span><div class="bar"><div id="m2" class="fill" style="width:0%"></div></div><b id="m2t">0</b></div>
+        <div class="metric"><span>성찰 기록</span><div class="bar"><div id="m3" class="fill" style="width:0%"></div></div><b id="m3t">0</b></div>
+
+        <div id="mission" class="mission"></div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="primary" onclick="coach()">✨ 코칭 받기</button>
+      <button class="secondary" onclick="saveLog()">💾 실습일지 저장</button>
+      <button class="ghost" onclick="downloadTxt()">⬇ 기록 내려받기</button>
+      <button class="ghost" onclick="resetForm()">↻ 새 실습 시작</button>
+    </div>
+    <div id="saved" class="saved">저장되었습니다. 이 브라우저에 실습기록이 보관됩니다.</div>
+  </section>
+
+  <section class="card full">
+    <h2>⑥ 교사용 확인 포인트</h2>
+    <div class="row">
+      <div>
+        <label>교사 피드백</label>
+        <textarea id="teacher" placeholder="AI 코칭을 확인한 뒤 교사가 최종 피드백을 작성합니다."></textarea>
+      </div>
+      <div>
+        <label>다음 실습 확인사항</label>
+        <textarea id="nextCheck" placeholder="예: 반죽 충전량 80% 유지 / 동일 팬 위치 사용 / 굽기 후 2분 내 탈형"></textarea>
+      </div>
+    </div>
+    <div class="note">AI는 교사를 대체하지 않습니다. 학생의 관찰과 성찰을 돕고, 교사는 최종 판단과 안전·기술 지도를 담당합니다.</div>
+  </section>
+</div>
+
+<div class="footer">B-디저트 실무 · 코칭형 AI 실습일지 프로토타입 · OpenAI API 서버 연결 버전</div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+$('date').valueAsDate = new Date();
+
+$('photo').addEventListener('change', e=>{
+  const f=e.target.files?.[0];
+  if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{$('preview').src=r.result;$('preview').style.display='block';};
+  r.readAsDataURL(f);
+});
+
+function issues(){
+  return [...document.querySelectorAll('input[name="issue"]:checked')].map(x=>x.value);
+}
+
+async function coach(){
+  const button = document.querySelector('button.primary');
+  const oldText = button.textContent;
+  button.disabled = true;
+  button.textContent = '⏳ AI가 분석 중입니다...';
+
+  try {
+    const file = $('photo').files?.[0];
+    const imageDataUrl = file ? await resizeImage(file, 1280, 0.82) : null;
+
+    const payload = {
+      product: $('product').value,
+      goal: $('goal').value,
+      process: $('process').value,
+      temp: $('temp').value,
+      time: $('time').value,
+      change: $('change').value,
+      difficulty: $('difficulty').value,
+      selfCause: $('selfCause').value,
+      issues: issues(),
+      score: $('score').value,
+      imageDataUrl
+    };
+
+    const response = await fetch('/api/coach', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(payload)
+    });
+
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'AI 코칭 요청에 실패했습니다.');
+
+    $('good').innerHTML = '<strong>👍 잘한 점</strong><br>' + escapeHtml(result.good || '');
+    $('cause').innerHTML = '<strong>🔎 가능한 원인</strong><br>' + formatLines(result.cause || '');
+    $('fix').innerHTML = '<strong>🛠 개선 방법</strong><br>' + formatLines(result.fix || '');
+    $('question').innerHTML = '<strong>💬 코치 질문</strong><br>' + escapeHtml(result.question || '');
+
+    const m1 = Number(result.metrics?.process_record ?? 70);
+    const m2 = Number(result.metrics?.cause_reasoning ?? 70);
+    const m3 = Number(result.metrics?.reflection ?? 70);
+    setMetric('m1', Math.max(0, Math.min(100, m1)));
+    setMetric('m2', Math.max(0, Math.min(100, m2)));
+    setMetric('m3', Math.max(0, Math.min(100, m3)));
+
+    $('mission').innerHTML =
+      '🎯 <b>다음 실습 미션:</b> ' + escapeHtml(result.mission || '오늘과 비교할 변수 한 가지를 정해 다음 실습에서 확인하세요.');
+
+    $('analysisArea').style.display='block';
+    $('coachIntro').style.display='none';
+  } catch (err) {
+    alert('AI 코칭 연결 오류: ' + err.message);
+  } finally {
+    button.disabled = false;
+    button.textContent = oldText;
+  }
+}
+
+function escapeHtml(text){
+  return String(text ?? '')
+    .replaceAll('&','&amp;')
+    .replaceAll('<','&lt;')
+    .replaceAll('>','&gt;')
+    .replaceAll('"','&quot;')
+    .replaceAll("'","&#039;");
+}
+
+function formatLines(text){
+  return escapeHtml(text).replace(/\n/g,'<br>');
+}
+
+function resizeImage(file, maxSize=1280, quality=0.82){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      const img = new Image();
+      img.onload = ()=>{
+        let w = img.width, h = img.height;
+        const scale = Math.min(1, maxSize / Math.max(w,h));
+        w = Math.round(w*scale); h = Math.round(h*scale);
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img,0,0,w,h);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = reject;
+      img.src = reader.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function setMetric(id,val){
+  $(id).style.width=val+'%';
+  $(id+'t').textContent=Math.round(val);
+}
+
+function collect(){
+  return {
+    product:$('product').value, student:$('student').value, date:$('date').value,
+    goal:$('goal').value, process:$('process').value, temp:$('temp').value,
+    time:$('time').value, change:$('change').value, difficulty:$('difficulty').value,
+    issues:issues(), score:$('score').value, selfCause:$('selfCause').value,
+    teacher:$('teacher').value, nextCheck:$('nextCheck').value,
+    savedAt:new Date().toISOString()
+  };
+}
+
+function saveLog(){
+  const data=collect();
+  const logs=JSON.parse(localStorage.getItem('bDessertLogs')||'[]');
+  logs.push(data);
+  localStorage.setItem('bDessertLogs',JSON.stringify(logs));
+  $('saved').style.display='block';
+  setTimeout(()=>$('saved').style.display='none',3000);
+}
+
+function downloadTxt(){
+  const d=collect();
+  const text=`[B-디저트 실무 AI 실습일지]
+제품: ${d.product}
+학생: ${d.student}
+날짜: ${d.date}
+
+1. 오늘의 목표
+${d.goal}
+
+2. 표준 배합/공정
+${d.process}
+
+3. 실제 조건
+오븐 온도: ${d.temp}℃
+굽기 시간: ${d.time}분
+
+4. 실습 중 달라진 점
+${d.change}
+
+5. 가장 어려웠던 점
+${d.difficulty}
+
+6. 자기평가
+문제 항목: ${d.issues.join(', ') || '선택 없음'}
+만족도: ${d.score}/5
+내가 생각한 실패 원인: ${d.selfCause}
+
+7. 교사 피드백
+${d.teacher}
+
+8. 다음 실습 확인사항
+${d.nextCheck}
+`;
+  const blob=new Blob([text],{type:'text/plain;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`B디저트_실습일지_${d.student||'학생'}_${d.date||'날짜'}.txt`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function resetForm(){
+  if(!confirm('현재 입력 내용을 지우고 새 실습을 시작할까요?')) return;
+  ['student','process','temp','time','change','difficulty','selfCause','teacher','nextCheck'].forEach(id=>$(id).value='');
+  document.querySelectorAll('input[name="issue"]').forEach(x=>x.checked=false);
+  $('score').value=3;$('scoreText').textContent='3 / 5';
+  $('preview').style.display='none';$('photo').value='';
+  $('analysisArea').style.display='none';$('coachIntro').style.display='block';
+  $('date').valueAsDate=new Date();
+}
+</script>
+</body>
+</html>
